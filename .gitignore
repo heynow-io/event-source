@@ -1,0 +1,20 @@
+# intellij idea files
+.idea/*
+out/*
+*.iml
+atlassian-ide-plugin.xml
+
+# eclipse files
+**/.settings/*
+.classpath
+.project
+.checkstyle
+.springBeans
+bin/*
+
+# maven target dir
+target/*
+*/target/*
+
+# misc
+mockserver*

@@ -1,12 +1,15 @@
 package io.heynow.eventsource.model;
 
+import io.heynow.stream.manager.model.ProcessingModel;
+import lombok.Builder;
 import lombok.Data;
 
-import java.util.Map;
+import java.util.List;
 
-public @Data class Event {
-    String url;
-    String eventType;
-    String application:
-    Map<String,String> payload;
+@Builder
+public
+@Data
+class Event {
+    ExternalEvent externalEvent;
+    List<ProcessingModel> processingModels;
 }

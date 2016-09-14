@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class ExternalEventController {
+public class EventController {
 
     @Autowired
     EventService eventService;

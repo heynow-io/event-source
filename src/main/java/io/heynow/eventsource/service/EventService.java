@@ -1,43 +1,47 @@
 package io.heynow.eventsource.service;
 
 import io.heynow.eventsource.model.Event;
-import io.heynow.eventsource.model.ExternalEvent;
-import io.heynow.stream.manager.model.ProcessingModel;
+import io.heynow.eventsource.model.Note;
+import io.heynow.eventsource.model.ProcessingModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.context.annotation.Bean;
-import org.springframework.integration.router.AbstractMappingMessageRouter;
-import org.springframework.integration.router.PayloadTypeRouter;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 
+@Service
+@EnableBinding({Sink.class, Source.class})
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class EventService {
 
+    private final StreamManagerService streamManagerService;
     private final Source source;
 
-    @Autowired
-    StreamManagerService streamManagerService;
-    @Autowired
-    AbstractMappingMessageRouter messageRouter;
+    public void processEvent(Event event) {
+        List<ProcessingModel> processingModels = streamManagerService.fetchProcessingModels(event.getSource(), event.getType());
 
-    public void processEvent(ExternalEvent externalEvent) {
-        List<ProcessingModel> processingModels = streamManagerService.fetchProcessingModels(externalEvent.getApplication(), externalEvent.getEventType());
-
-        ProcessingModel currentProcessingModel = processingModels.remove(0);
-        messageRouter.setChannelMapping("streamInteger", currentProcessingModel.getStreamId());
-
-        Event event = Event.builder().externalEvent(externalEvent).processingModels(processingModels).build();
-        source.output().send(MessageBuilder.withPayload(event).build());
+        for (ProcessingModel processingModel : processingModels) {
+            sendEventToRouter(event, processingModel);
+        }
     }
 
-    @Bean
-    AbstractMappingMessageRouter getMessageRouter(){
-        return new PayloadTypeRouter();
+    private void sendEventToRouter(Event event, ProcessingModel processingModel) {
+        Note note = prepareNote(event, processingModel);
+        source.output().send(MessageBuilder.withPayload(note).build());
     }
+
+    private Note prepareNote(Event event, ProcessingModel processingModel) {
+        return Note.builder().processingModel(processingModel).payload(event.getPayload()).build();
+    }
+
+    @org.springframework.integration.annotation.Router(inputChannel = Sink.INPUT)
+    public final String route(Note note) {
+        return note.getProcessingModel().getCurrent().getName();
+    }
+
 }

@@ -1,6 +1,6 @@
 package io.heynow.eventsource.controller;
 
-import io.heynow.eventsource.model.ExternalEvent;
+import io.heynow.eventsource.model.Event;
 import io.heynow.eventsource.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +15,7 @@ public class ExternalEventController {
     EventService eventService;
 
     @RequestMapping(value = "/event", method = RequestMethod.POST)
-    public void event(@RequestBody ExternalEvent event) {
+    public void event(@RequestBody Event event) {
         eventService.processEvent(event);
     }
 }

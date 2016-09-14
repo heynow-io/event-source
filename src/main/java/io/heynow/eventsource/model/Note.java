@@ -1,13 +1,11 @@
 package io.heynow.eventsource.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.Map;
-
-public
-@Data
-class Event {
-    String source;
-    String type;
+@Builder
+public @Data class Note {
+    ProcessingModel processingModel;
     Map<String, Object> payload;
 }

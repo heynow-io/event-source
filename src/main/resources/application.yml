@@ -1,6 +1,4 @@
-stream:
-  manager:
-    url: localhost:8080
+stream-manager.url: localhost:8080
 logging:
   level: debug
 spring.cloud.stream.bindings.output.destination: eventSource

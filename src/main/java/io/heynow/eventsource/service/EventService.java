@@ -1,8 +1,9 @@
 package io.heynow.eventsource.service;
 
+import io.heynow.eventsource.client.StreamManagerClient;
 import io.heynow.eventsource.model.Event;
-import io.heynow.eventsource.model.Note;
-import io.heynow.eventsource.model.ProcessingModel;
+import io.heynow.stream.manager.client.model.Note;
+import io.heynow.stream.manager.client.model.ProcessingModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -19,11 +20,11 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__({@Autowired}))
 public class EventService {
 
-    private final StreamManagerService streamManagerService;
+    private final StreamManagerClient streamManagerService;
     private final Source source;
 
     public void processEvent(Event event) {
-        List<ProcessingModel> processingModels = streamManagerService.fetchProcessingModels(event.getSource(), event.getType());
+        List<ProcessingModel> processingModels = streamManagerService.getProcessingModel(event.getSource(), event.getType());
 
         for (ProcessingModel processingModel : processingModels) {
             sendEventToRouter(event, processingModel);
@@ -36,7 +37,10 @@ public class EventService {
     }
 
     private Note prepareNote(Event event, ProcessingModel processingModel) {
-        return Note.builder().processingModel(processingModel).payload(event.getPayload()).build();
+        Note note = new Note();
+        note.setProcessingModel(processingModel);
+        note.setPayload(event.getPayload());
+        return note;
     }
 
     @org.springframework.integration.annotation.Router(inputChannel = Sink.INPUT)

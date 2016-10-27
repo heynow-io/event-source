@@ -1,7 +1,7 @@
 package io.heynow.eventsource.service;
 
-import io.heynow.eventsource.client.StreamManagerClient;
 import io.heynow.eventsource.model.Event;
+import io.heynow.stream.manager.client.facade.StreamManagerClient;
 import io.heynow.stream.manager.client.model.Note;
 import io.heynow.stream.manager.client.model.ProcessingModel;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class EventService {
     private final Source source;
 
     public void processEvent(Event event) {
-        List<ProcessingModel> processingModels = streamManagerService.getProcessingModel(event.getSource(), event.getType());
+        List<ProcessingModel> processingModels = streamManagerService.getProcessingModels(event.getSource(), event.getType());
 
         for (ProcessingModel processingModel : processingModels) {
             sendEventToRouter(event, processingModel);

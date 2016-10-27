@@ -1,4 +1,5 @@
 spring:
   application.name: event-source
 logging:
-  level: debug
+  level:  debug
+  file:   application.log

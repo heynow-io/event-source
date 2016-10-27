@@ -1,5 +1,4 @@
-stream-manager.url: localhost:8080
+spring:
+  application.name: event-source
 logging:
   level: debug
-spring.cloud.stream.bindings.output.destination: eventSource
-spring.cloud.stream.bindings.input.destination: eventSource
